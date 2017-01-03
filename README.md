@@ -32,7 +32,7 @@ into a vagrant box.
 - [Ansible](http://www.ansible.com/)
 - [VirtualBox](https://www.virtualbox.org/)
 
-### Installing the requirements
+## Installing the requirements
 ### Archlinux
 
 1. Install Virtualbox:
