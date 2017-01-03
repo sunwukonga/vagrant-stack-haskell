@@ -24,6 +24,7 @@ into a vagrant box.
 - [Stack](https://docs.haskellstack.org/)
 - [Vim](http://www.vim.org/)
 - [Git](http://git-scm.com/)
+- [haskell-vim-proto](https://github.com/sdiehl/haskell-vim-proto)
 
 ## Prerequisites
 
@@ -79,8 +80,8 @@ into a vagrant box.
 #### Clone the github repository:
 
 ```bash
-git clone git@github.com:sunwukonga/vagrant-stack-haskell
-cd devbox-golang
+git clone https://github.com/sunwukonga/vagrant-stack-haskell.git
+cd vagrant-stack-haskell
 ```
 
 #### Bring up the VM
