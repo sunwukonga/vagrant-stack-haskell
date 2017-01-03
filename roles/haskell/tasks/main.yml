@@ -1,0 +1,65 @@
+---
+- name: Download stack install script
+  get_url:
+    url: "https://get.haskellstack.org/"
+    dest: "{{ home_dir }}/stack_install.sh"
+- name: Modify stack install script permissions (executable)
+  file:
+    path: "{{ home_dir }}/stack_install.sh"
+    mode: "u+x"
+- name: Execute stack install script
+  shell: "{{ home_dir }}/stack_install.sh"
+  args:
+    creates: /usr/local/bin/stack
+    ##- name: Remove stack install script
+    ##  file:
+    ##    path: "{{ home_dir }}/stack_install.sh"
+    ##    state: absent
+
+- name: Symlink fp repository for apt
+  file: src=/vagrant/roles/haskell/files/{{ item }} dest=/etc/apt/sources.list.d/{{ item }} state=link
+  with_items:
+    - fpco.list
+  become: true
+
+- name: Clone haskell vim proto
+  git:
+    repo=https://github.com/sdiehl/haskell-vim-proto.git
+    dest=/home/vagrant/haskell-vim-proto
+    update=no  ## Protects against an upstream change ruining your config,
+               ## and prevents a fail if you have made uncommited changes to the repo.
+
+- name: Symlink vim directory to ~/.vim directory
+  file: src="{{ home_dir }}/haskell-vim-proto/vim" dest="{{ home_dir }}/.vim" state=link
+
+  ##- name: Add path to vimrc
+  ##  lineinfile:
+  ##    dest: "{{ home_dir }}/haskell-vim-proto/vimrc"
+  ##    regexp: ^Let \$PATH = \$PATH
+  ##    insertafter: ^\" == basic ==
+  ##    line: "Let $PATH = $PATH . ':' . expand('~/.stack/bin')"
+
+- name: Symlink vimrc file to ~/.vimrc file
+  file: src="{{ home_dir }}/haskell-vim-proto/vimrc" dest="{{ home_dir }}/.vimrc" state=link
+
+- name: Make the vimproc.vim C module
+  make:
+     chdir="{{ home_dir }}/haskell-vim-proto/vim/bundle/vimproc.vim/"
+
+- name: Setup Stack (expecting ghci in {{ home_dir }}/.stack/programs...)
+  command: /usr/local/bin/stack setup
+    creates="{{ home_dir }}/.stack/programs/x86_64-linux/ghc-8.0.1/bin/ghci"
+
+- name: Install hlint and ghc-mod with stack
+  command: /usr/local/bin/stack install {{ item }}
+    creates="{{ home_dir }}/.local/bin/{{ item }}"
+  with_items:
+    - hlint
+    - ghc-mod
+
+- name: Configure email for git
+  git_config: name=user.email scope=global value="{{ git_email }}"
+- name: Configure core editor for git
+  git_config: name=core.editor scope=global value="vim"
+- name: Configure email for git
+  git_config: name=user.name scope=global value="{{ git_name }}"

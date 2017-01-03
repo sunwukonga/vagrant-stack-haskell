@@ -1,0 +1,15 @@
+---
+# Configuration file
+# Change settings here to control how your box is set up.
+
+# Git settings
+git_name: "Paul Parker"
+git_email: "pauldesmondparker@gmail.com"
+
+username: "vagrant"
+home_dir: "/home/{{username}}"
+
+# Makeswap settings
+swap_file_path: /swapfile
+swap_file_size: 4G
+swappiness: 1

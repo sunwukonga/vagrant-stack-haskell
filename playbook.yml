@@ -1,0 +1,32 @@
+---
+- hosts: all
+  become: true
+  vars:
+      home: /home/vagrant
+      document_root: /vagrant
+      os: ubuntu
+      osversioncode: trusty
+  vars_files:
+      - settings.yml
+  pre_tasks:
+      - name: Update apt cache and optionally upgrade
+        apt:
+          update_cache=yes
+          cache_valid_time=7200
+          #upgrade=yes # Uncomment this to force full upgrade!
+      - name: Install stuff from Aptitude
+        apt: name={{ item }} state=installed
+        with_items:
+         - git
+         - vim
+         - bash-completion
+         - make
+         - tree
+         - htop
+         - tmux
+         - man-db
+
+  roles:
+      - { role: makeswap, become: true }  ## Necessary to avoid inexplicable build failures (ExitFailure 11) due to Out of Memory
+      - { role: haskell, become: false }  ## Does most of the work of provisioning Stack and Vim config
+      - { role: dotfiles, become: false } ## Just some bash stuff here
